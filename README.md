@@ -1,12 +1,17 @@
 # Auto Map Changer
- Changes the map to default when not active
-
-# Installation
-1. Install [CounterStrike Sharp](https://github.com/roflmuffin/CounterStrikeSharp) and [Metamod:Source](https://www.sourcemm.net/downloads.php/?branch=master)
-3. Download [Auto-Map-Changer](https://github.com/skaen/Auto-Map-Changer/releases)
-4. Unzip the archive and upload it to the game server
-
-# Config
+Changes the map to default, when not active
+### Installation
+1. Install [Metamod:Source](https://www.sourcemm.net/downloads.php/?branch=master)
+2. Install [CounterStrike Sharp](https://github.com/roflmuffin/CounterStrikeSharp) 
+3. Build `Auto Map Changer`
+4. Move dir `AutoChangeMap` in `counterstrikesharp/plugins`
+### Build
+```
+dotnet publish -c release -r linux-x64 --no-self-contained -p:DebugSymbols=false -p:DebugType=None -o AutoChangeMap
+```
+> [!NOTE]
+> Needs `CounterStrikeSharp.API.dll` in parent dir
+### Config
 The config is created automatically in the same place where the dll is located
 ```
 {
@@ -14,5 +19,7 @@ The config is created automatically in the same place where the dll is located
   "DefaultMap": "de_dust2"
 }
 ```
-# Commands
+> [!NOTE]
+> For Workshop maps needs prefix `ws:`
+### Commands
 `css_acm_reload` - Reload config AutoChangeMap
