@@ -2,9 +2,13 @@ name: .NET
 
 on:
   push:
-    branches: [ "master" ]
+    paths-ignore:
+    - LICENSE
+    - README.md
   pull_request:
-    branches: [ "master" ]
+    paths-ignore:
+    - LICENSE
+    - README.md
 
 jobs:
   build:
@@ -46,3 +50,28 @@ jobs:
         with:
           name: AutoMapChanger-${{ env.GITHUB_SHA_SHORT }}
           path: AutoMapChanger/AutoChangeMap
+
+  release:
+    name: Release
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Arhive Assets
+        shell: bash
+        run: find * -maxdepth 0 -type d -exec zip -r {}.zip {} \;
+
+      - name: Create Release
+        shell: bash
+        run: gh release create ${{ github.ref_name }} --title ${{ github.ref_name }} --latest -R ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload assets
+        shell: bash
+        run: gh release upload ${{ github.ref_name }} *.zip -R ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
