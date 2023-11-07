@@ -1,0 +1,48 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare env
+        shell: bash
+        run: echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Checking out own repository
+        uses: actions/checkout@v3
+        with:
+          path: AutoMapChanger
+
+      - name: Download CounterStrikeSharp.API.dll
+        shell: bash
+        run: |
+          items=$(curl -s https://api.github.com/repos/roflmuffin/CounterStrikeSharp/actions/artifacts?per_page=4 | jq -r -c '.artifacts[]')
+          for item in ${items[@]};
+          do
+            if [[ $(echo $item | jq -r -c '.name') == "counterstrikesharp-build-"* ]]; then
+              curl -s -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $(echo $item | jq -r -c '.archive_download_url') -o counterstrikesharp-api.zip
+              break
+            fi
+          done
+          unzip -j counterstrikesharp-api.zip addons/counterstrikesharp/api/CounterStrikeSharp.API.dll
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Build
+        working-directory: AutoMapChanger
+        run: dotnet publish -c release -r linux-x64 --no-self-contained -p:DebugSymbols=false -p:DebugType=None -o AutoChangeMap
+
+      - name: Uploading package
+        uses: actions/upload-artifact@v3
+        with:
+          name: AutoMapChanger-${{ env.GITHUB_SHA_SHORT }}
+          path: AutoMapChanger/AutoChangeMap
