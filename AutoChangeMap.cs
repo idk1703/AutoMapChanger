@@ -9,7 +9,7 @@ namespace AutoMapChanger;
 public class AutoMapChanger : BasePlugin
 {
     public override string ModuleName => "Auto Map Changer";
-    public override string ModuleVersion => "1.1.0"; 
+    public override string ModuleVersion => "1.1.1"; 
     public override string ModuleAuthor => "skaen";
     public override string ModuleDescription => "Changes the map to default when not active";
     private static Config? _config = null;
@@ -37,12 +37,11 @@ public class AutoMapChanger : BasePlugin
     {
         if(NativeAPI.GetMapName() == _config!.DefaultMap) return;
 
-        var playerEntities = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller");
-        if(playerEntities.Any()) return;
+        if(Utilities.GetPlayers().Count > 0) return;
 
         if(_config.DefaultMap.IndexOf("ws:") != -1)
         {
-            Server.ExecuteCommand($"ds_workshop_changelevel {_config.DefaultMap.Substring(3)}");
+            Server.ExecuteCommand($"ds_workshop_changelevel {_config.DefaultMap[3..]}");
         }
         else
         {
