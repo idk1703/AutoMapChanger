@@ -15,11 +15,12 @@ dotnet publish -c release -r linux-x64 --no-self-contained -p:DebugSymbols=false
 The config is created automatically in the same place where the dll is located
 ```
 {
-  "Delay": 180,
+  "Delay": 15,
   "DefaultMap": "de_dust2"
 }
 ```
 > [!NOTE]
 > For Workshop maps needs prefix `ws:`
+> Delay in minutes, after this time map can change if server don't have players
 ### Commands
 `css_acm_reload` - Reload config AutoChangeMap

@@ -10,11 +10,12 @@ namespace AutoMapChanger;
 public class AutoMapChanger : BasePlugin
 {
     public override string ModuleName => "Auto Map Changer";
-    public override string ModuleVersion => "1.1.1.1"; 
+    public override string ModuleVersion => "1.1.2.0"; 
     public override string ModuleAuthor => "skaen";
     public override string ModuleDescription => "Changes the map to default when not active";
     private static Config? _config = null;
     private static Timer? hTimer = null;
+    private static int iChangeTime = 0;
     public override void Load(bool hotReload)
     {
         LoadConfig();
@@ -23,7 +24,10 @@ public class AutoMapChanger : BasePlugin
 
         RegisterListener<Listeners.OnMapStart>(mapName => {
             Log($"Map {mapName} has started!");
-            StartTimer();
+            if(mapName != _config!.DefaultMap && mapName != _config.DefaultMap[3..])
+            {
+                StartTimer();
+            }
         });
         RegisterListener<Listeners.OnMapEnd>(() => {
             Log($"Map has ended.");
@@ -31,14 +35,14 @@ public class AutoMapChanger : BasePlugin
     }
     public void StartTimer()
     {
-        hTimer ??= AddTimer(_config!.Delay, MapChange, TimerFlags.REPEAT);
+        iChangeTime = 0;
+        hTimer ??= AddTimer(60.0f, MapChange, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     private void MapChange()
     {
-        if(NativeAPI.GetMapName() == _config!.DefaultMap) return;
-
-        if(Utilities.GetPlayers().Count > 0) return;
+        iChangeTime = Utilities.GetPlayers().Where(p => p.IsBot == false).Any() ? 0 : iChangeTime + 1;
+        if(iChangeTime < _config!.Delay) return;
 
         if(_config.DefaultMap.IndexOf("ws:") != -1)
         {
@@ -58,10 +62,8 @@ public class AutoMapChanger : BasePlugin
         if(controller != null) return;
 
         LoadConfig();
+        iChangeTime = 0;
 
-        hTimer?.Kill();
-
-        StartTimer();
         Log($"[{ModuleVersion}] loaded config success");
     }
 
@@ -82,7 +84,7 @@ public class AutoMapChanger : BasePlugin
     {
         _config = new Config
         {
-            Delay = 180.0f,
+            Delay = 15,
             DefaultMap = "de_dust2",
         };
 
@@ -101,6 +103,6 @@ public class AutoMapChanger : BasePlugin
 
 public class Config
 {
-    public float Delay { get; set; }
+    public int Delay { get; set; }
     public string DefaultMap { get; set; } = null!;
 }
