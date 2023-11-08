@@ -3,13 +3,14 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Timers;
+using CounterStrikeSharp.API.Modules.Commands;
 
 namespace AutoMapChanger;
 
 public class AutoMapChanger : BasePlugin
 {
     public override string ModuleName => "Auto Map Changer";
-    public override string ModuleVersion => "1.1.1"; 
+    public override string ModuleVersion => "1.1.1.1"; 
     public override string ModuleAuthor => "skaen";
     public override string ModuleDescription => "Changes the map to default when not active";
     private static Config? _config = null;
@@ -52,7 +53,7 @@ public class AutoMapChanger : BasePlugin
     }
 
     [ConsoleCommand("css_acm_reload", "Reload config AutoChangeMap")]
-    public void ReloadACMConfig(CCSPlayerController? controller)
+    public void ReloadConfig(CCSPlayerController? controller, CommandInfo command)
     {
         if(controller != null) return;
 
@@ -87,7 +88,7 @@ public class AutoMapChanger : BasePlugin
 
         File.WriteAllText(configPath, JsonSerializer.Serialize(_config, new JsonSerializerOptions { WriteIndented = true }));
 
-        Log($"The configuration was successfully saved to a file: " + configPath);
+        Log($"The configuration was successfully saved to a file: {configPath}");
     }
     public void Log(string message)
     {
