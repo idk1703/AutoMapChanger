@@ -10,11 +10,10 @@ namespace AutoMapChanger;
 public class AutoMapChanger : BasePlugin
 {
     public override string ModuleName => "Auto Map Changer";
-    public override string ModuleVersion => "1.1.2.0"; 
+    public override string ModuleVersion => "1.1.2.1"; 
     public override string ModuleAuthor => "skaen";
     public override string ModuleDescription => "Changes the map to default when not active";
     private static Config? _config = null;
-    private static Timer? hTimer = null;
     private static int iChangeTime = 0;
     public override void Load(bool hotReload)
     {
@@ -27,7 +26,7 @@ public class AutoMapChanger : BasePlugin
             if(mapName != _config!.DefaultMap && mapName != _config.DefaultMap[3..])
             {
                 iChangeTime = 0;
-                hTimer = AddTimer(60.0f, MapChange, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
+                AddTimer(60.0f, MapChange, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
             }
         });
         RegisterListener<Listeners.OnMapEnd>(() => {
