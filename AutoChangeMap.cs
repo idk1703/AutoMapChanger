@@ -26,17 +26,13 @@ public class AutoMapChanger : BasePlugin
             Log($"Map {mapName} has started!");
             if(mapName != _config!.DefaultMap && mapName != _config.DefaultMap[3..])
             {
-                StartTimer();
+                iChangeTime = 0;
+                hTimer = AddTimer(60.0f, MapChange, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
             }
         });
         RegisterListener<Listeners.OnMapEnd>(() => {
             Log($"Map has ended.");
         });
-    }
-    public void StartTimer()
-    {
-        iChangeTime = 0;
-        hTimer ??= AddTimer(60.0f, MapChange, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     private void MapChange()
@@ -92,6 +88,7 @@ public class AutoMapChanger : BasePlugin
 
         Log($"The configuration was successfully saved to a file: {configPath}");
     }
+
     public void Log(string message)
     {
         Console.BackgroundColor = ConsoleColor.DarkGray;
