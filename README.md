@@ -21,6 +21,7 @@ The config is created automatically in the same place where the dll is located
 ```
 > [!NOTE]
 > For Workshop maps needs prefix `ws:`
+>
 > Delay in minutes, after this time map can change if server don't have players
 ### Commands
 `css_acm_reload` - Reload config AutoChangeMap
